@@ -41,7 +41,7 @@ batterynotify -l 25 -f 70
    ```bash
    cp batterynotify /usr/bin/
    ```
-4. Set the script as a cron job, by running the `crontab -e` command. Add the line: `*/3 * * * * /usr/bin/batterynotify` - the script will be executed in every 3 minute. You can change it to another value.
+4. Set the script as a cron job, by running the `crontab -e` command. Paste the following line to the file: `*/3 * * * * /usr/bin/batterynotify` and save it. The **3** means that the script will be executed in every 3 minute..
 
    On Arch based systems the `cronie.service` needs to be enabled:
    ```bash
