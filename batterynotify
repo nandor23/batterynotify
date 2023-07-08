@@ -38,6 +38,7 @@ if [ $# -gt 0 ] && (( $# % 2 != 0 )); then
     exit 1
 fi
 
+modified_values=0
 # Modify the values in the VALUES_FILE
 while [ $# -gt 0 ]; do
     flag="$1"
@@ -64,14 +65,22 @@ while [ $# -gt 0 ]; do
 
     if [ "$flag" = "-l" ]; then
         sed -i "1s/.*/$value/" "$VALUES_FILE"
+        modified_values=1
     elif [ "$flag" = "-f" ]; then
         sed -i "2s/.*/$value/" "$VALUES_FILE"
+        modified_values=1
     elif [ "$flag" = "-c" ]; then
         sed -i "3s/.*/$value/" "$VALUES_FILE"
+        modified_values=1
     fi
 
     shift 2
 done
+
+# If values were modified then exit, as the main script 
+if [ "$modified_values" -eq 1 ]; then
+    exit 0
+fi
 
 
 # The script will be executed by default in every 3 minutes
