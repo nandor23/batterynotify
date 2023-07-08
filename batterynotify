@@ -9,7 +9,6 @@ export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus"
 # Battery percentage at which to notify
 WARNING_LEVEL_LOW=30
 WARNING_LEVEL_FULL=80
-CHECK_INTERVAL=3
 
 # Icon names that are shown with the notification
 BATTERY_LOW_ICON="battery-level-30"
@@ -22,14 +21,13 @@ BATTERY_LEVEL=$(acpi -b | grep "Battery 0" | grep -P -o '[0-9]+(?=%)')
 EMPTY_FILE=/tmp/batterynotify_empty
 FULL_FILE=/tmp/batterynotify_full
 
-VALUES_FILE=~/.config/batterynotify_values
+VALUES_FILE=~/batterynotify_values
 
 # Create the file for the values that the script uses with the default values
 if [ ! -f "$VALUES_FILE" ]; then
     touch $VALUES_FILE
     echo "$WARNING_LEVEL_LOW" > "$VALUES_FILE"
     echo "$WARNING_LEVEL_FULL" >> "$VALUES_FILE"
-    echo "$CHECK_INTERVAL" >> "$VALUES_FILE"
 fi
 
 # Check if enough arguments were given
@@ -44,23 +42,14 @@ while [ $# -gt 0 ]; do
     flag="$1"
     value="$2"
 
-    if [ "$flag" != "-l" ] && [ "$flag" != "-f" ] && [ "$flag" != "-c" ]; then
+    if [ "$flag" != "-l" ] && [ "$flag" != "-f" ]; then
         echo "Invalid flag: ${flag}"
         exit 1
     fi
 
-    if [ "$flag" != "-c" ]; then
-        if echo "$value" | grep -vqE '^([5-9]|[1-9][0-9]|100)$'; then
-            echo "Battery values must be between 5 and 100"
-            exit 1
-        fi
-    else
-        # The minutes the battery percentage is checked
-        if echo "$value" | grep -vqE '^[1-9]$|^10$'; then
-            echo "Battery's check interval must be between 1 and 10"  
-            exit 1
-        fi
-
+    if echo "$value" | grep -vqE '^([5-9]|[1-9][0-9]|100)$'; then
+        echo "Battery values must be between 5 and 100"
+        exit 1
     fi
 
     if [ "$flag" = "-l" ]; then
@@ -68,9 +57,6 @@ while [ $# -gt 0 ]; do
         modified_values=1
     elif [ "$flag" = "-f" ]; then
         sed -i "2s/.*/$value/" "$VALUES_FILE"
-        modified_values=1
-    elif [ "$flag" = "-c" ]; then
-        sed -i "3s/.*/$value/" "$VALUES_FILE"
         modified_values=1
     fi
 
@@ -82,35 +68,24 @@ if [ "$modified_values" -eq 1 ]; then
     exit 0
 fi
 
+{
+    read -r WARNING_LEVEL_LOW
+    read -r WARNING_LEVEL_FULL
+} < "$VALUES_FILE"
 
-# The script will be executed by default in every 3 minutes
-# The interval can be changed from 1 to 10 minute
-while true; do
-    {
-        read -r WARNING_LEVEL_LOW
-        read -r WARNING_LEVEL_FULL
-        read -r CHECK_INTERVAL
-    } < "$VALUES_FILE"
+# Reset notifications if the computer is charging/discharging
+if [ "$BATTERY_DISCHARGING" -eq 1 ] && [ -f $FULL_FILE ]; then
+    rm $FULL_FILE
+elif [ "$BATTERY_DISCHARGING" -eq 0 ] && [ -f $EMPTY_FILE ]; then
+    rm $EMPTY_FILE
+fi
 
-    # Convert minutes to seconds
-    seconds=$((CHECK_INTERVAL * 60))
-
-    # Reset notifications if the computer is charging/discharging
-    if [ "$BATTERY_DISCHARGING" -eq 1 ] && [ -f $FULL_FILE ]; then
-        rm $FULL_FILE
-    elif [ "$BATTERY_DISCHARGING" -eq 0 ] && [ -f $EMPTY_FILE ]; then
-        rm $EMPTY_FILE
-    fi
-
-    # If the battery is charging and is full (and has not shown notification yet)
-    if [ "$BATTERY_LEVEL" -ge $WARNING_LEVEL_FULL ] && [ "$BATTERY_DISCHARGING" -eq 0 ] && [ ! -f $FULL_FILE ]; then
-        notify-send "Battery Charged" "Battery is fully charged." -i $BATTERY_FULL_ICON -r 9991
-        touch $FULL_FILE
-    # If the battery is low and is not charging (and has not shown notification yet)
-    elif [ "$BATTERY_LEVEL" -le $WARNING_LEVEL_LOW ] && [ "$BATTERY_DISCHARGING" -eq 1 ] && [ ! -f $EMPTY_FILE ]; then
-        notify-send "Low Battery" "${BATTERY_LEVEL}% of battery remaining." -u critical -i $BATTERY_LOW_ICON -r 9991
-        touch $EMPTY_FILE
-    fi
-    
-    sleep $seconds
-done
+# If the battery is charging and is full (and has not shown notification yet)
+if [ "$BATTERY_LEVEL" -ge $WARNING_LEVEL_FULL ] && [ "$BATTERY_DISCHARGING" -eq 0 ] && [ ! -f $FULL_FILE ]; then
+    notify-send "Battery Charged" "Battery is fully charged." -i $BATTERY_FULL_ICON -r 9991
+    touch $FULL_FILE
+# If the battery is low and is not charging (and has not shown notification yet)
+elif [ "$BATTERY_LEVEL" -le $WARNING_LEVEL_LOW ] && [ "$BATTERY_DISCHARGING" -eq 1 ] && [ ! -f $EMPTY_FILE ]; then
+    notify-send "Low Battery" "${BATTERY_LEVEL}% of battery remaining." -u critical -i $BATTERY_LOW_ICON -r 9991
+    touch $EMPTY_FILE
+fi
