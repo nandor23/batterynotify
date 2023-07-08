@@ -9,7 +9,7 @@ export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus"
 # Battery percentage at which to notify
 WARNING_LEVEL_LOW=30
 WARNING_LEVEL_FULL=80
-CHECK_INTERVAL=5
+CHECK_INTERVAL=3
 
 # Icon names that are shown with the notification
 BATTERY_LOW_ICON="battery-level-30"
@@ -21,7 +21,6 @@ BATTERY_LEVEL=$(acpi -b | grep "Battery 0" | grep -P -o '[0-9]+(?=%)')
 # Use two files to store whether we've shown a notification or not (to prevent multiple notifications)
 EMPTY_FILE=/tmp/batterynotify_empty
 FULL_FILE=/tmp/batterynotify_full
-VALUES_WERE_MODIFIED=/tmp/batterynotify_modified
 
 VALUES_FILE=~/.config/batterynotify_values
 
@@ -39,7 +38,6 @@ if [ $# -gt 0 ] && (( $# % 2 != 0 )); then
     exit 1
 fi
 
-modified_values=0
 # Modify the values in the VALUES_FILE
 while [ $# -gt 0 ]; do
     flag="$1"
@@ -66,39 +64,27 @@ while [ $# -gt 0 ]; do
 
     if [ "$flag" = "-l" ]; then
         sed -i "1s/.*/$value/" "$VALUES_FILE"
-        modified_values=1
     elif [ "$flag" = "-f" ]; then
         sed -i "2s/.*/$value/" "$VALUES_FILE"
-        modified_values=1
     elif [ "$flag" = "-c" ]; then
         sed -i "3s/.*/$value/" "$VALUES_FILE"
-        modified_values=1
     fi
 
     shift 2
 done
 
-# If values were modified then exit, as the main script 
-if [ "$modified_values" -eq 1 ]; then
-    touch $VALUES_WERE_MODIFIED
-    exit 0
-fi 
 
-# Convert minute to seconds
-seconds=$((CHECK_INTERVAL * 60))
-
-# The script will be executed by default in every 5 minutes
+# The script will be executed by default in every 3 minutes
 # The interval can be changed from 1 to 10 minute
 while true; do
-    if [ -f $VALUES_WERE_MODIFIED ]; then
-        {
-            read -r WARNING_LEVEL_LOW
-            read -r WARNING_LEVEL_FULL
-            read -r CHECK_INTERVAL
-        } < "$VALUES_FILE"
-        seconds=$((CHECK_INTERVAL * 60))
-        rm $VALUES_WERE_MODIFIED
-    fi
+    {
+        read -r WARNING_LEVEL_LOW
+        read -r WARNING_LEVEL_FULL
+        read -r CHECK_INTERVAL
+    } < "$VALUES_FILE"
+
+    # Convert minutes to seconds
+    seconds=$((CHECK_INTERVAL * 60))
 
     # Reset notifications if the computer is charging/discharging
     if [ "$BATTERY_DISCHARGING" -eq 1 ] && [ -f $FULL_FILE ]; then
