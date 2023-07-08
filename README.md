@@ -24,7 +24,7 @@ By default, it alerts the user when the battery reaches `30%` or `80%`. We can e
    ```bash
    echo $DBUS_SESSION_BUS_ADDRESS
    ```
-3. Optional! The file where the threshold values are saved can be changed, by editing the value of `VALUES_FILE` in the script. 
+3. *Optional!* The file where the threshold values are saved can be changed, by editing the value of `VALUES_FILE` in the script. 
 4. Give executable permission to the script and add it to the PATH:
    ```bash
    cp batterynotify /usr/bin/
