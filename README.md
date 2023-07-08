@@ -8,8 +8,7 @@ It was only tested on EndeavourOS with GNOME desktop environment, but the script
 
 ## Dependencies
 
-Expand All
-	@@ -14,7 +14,7 @@ It was only tested on EndeavourOS with GNOME desktop environment, but the script
+It was only tested on EndeavourOS with GNOME desktop environment, but the script
 
 ## Features
 
