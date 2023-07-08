@@ -9,8 +9,8 @@ It was only tested on EndeavourOS with GNOME desktop environment, but the script
 ## Dependencies
 
 - [**dunst**](https://github.com/dunst-project/dunst)
-- [**cronie**:](https://github.com/cronie-crond/cronie)
-- [**acpi**:](https://sourceforge.net/projects/acpiclient)
+- [**cronie**](https://github.com/cronie-crond/cronie)
+- [**acpi**](https://sourceforge.net/projects/acpiclient)
 
 ## Features
 
@@ -28,3 +28,23 @@ For example, to get notifications when the battery reaches `25%` and `70%`:
 ```bash
 batterynotify -l 25 -f 70
 ```
+
+## Installation
+
+1. Install the dependencies
+2. Change the value of `DBUS_SESSION_BUS_ADDRESS` in the script to the output of the following command (without the guid):
+   
+   ```bash
+   echo $DBUS_SESSION_BUS_ADDRESS
+   ```
+3. Give executable permission to the script and add it to the PATH:
+   ```bash
+   cp batterynotify /usr/bin/
+   ```
+4. Set the script as a cron job, by running the `crontab -e` command. Add the line: `*/3 * * * * /usr/bin/batterynotify` - the script will be executed in every 3 minute. You can change it to another value.
+
+   On Arch based systems the `cronie.service` needs to be enabled:
+   ```bash
+   systemctl enable cronie.service
+   systemctl start cronie.service
+   ``` 
