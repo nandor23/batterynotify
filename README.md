@@ -8,7 +8,9 @@ It was only tested on EndeavourOS with GNOME desktop environment, but the script
 
 ## Dependencies
 
-It was only tested on EndeavourOS with GNOME desktop environment, but the script
+- [**dunst**](https://github.com/dunst-project/dunst)
+- [**cronie**](https://github.com/cronie-crond/cronie)
+- [**acpi**](https://sourceforge.net/projects/acpiclient)
 
 ## Features
 
