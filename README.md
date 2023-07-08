@@ -3,7 +3,7 @@
 A battery alert program that sends a notification when the battery percentage reaches a certain level. This is a modified bash script, written by [Eric Murphy](https://github.com/ericmurphyxyz/dotfiles/blob/master/.local/bin/batterynotify). The `batterynotify` script should be added to the `PATH` in order to enable custom battery threshold configuration from the terminal.
 
 <img src="images/battery_low.png" alt="Alt Text" width="550">
-<img src="images/battery_full.png" alt="Alt Text" width="550">
+<img src="images/battery_charged.png" alt="Alt Text" width="550">
 
 
 
