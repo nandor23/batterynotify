@@ -23,6 +23,16 @@ There are 2 notifications: when the battery is low and when it is full.
 
 By default, it alerts the user when the battery reaches `30%` or `80%`. We can edit both thresholds by calling the script with the proper flags:
 
+| Flag | Description |
+| --- | --- |
+| -l | Set the battery low warning level |
+| -f | Set the battery full warning level |
+
+For example, to get notifications when the battery reaches `25%` and `70%`:
+```bash
+batterynotify -l 25 -f 70
+```
+
 ## Installation
 
 1. Install the dependencies
