@@ -21,7 +21,7 @@ BATTERY_LEVEL=$(acpi -b | grep "Battery 0" | grep -P -o '[0-9]+(?=%)')
 EMPTY_FILE=/tmp/batterynotify_empty
 FULL_FILE=/tmp/batterynotify_full
 
-VALUES_FILE=~/batterynotify_values
+VALUES_FILE=~/.batterynotify_values
 
 # Create the file for the values that the script uses with the default values
 if [ ! -f "$VALUES_FILE" ]; then
