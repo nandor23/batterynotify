@@ -9,7 +9,7 @@ A battery alert program that sends a notification when the battery percentage re
 
 ## Tested
 
-It was only tested on EndeavourOS with GNOME desktop environment, but the script must function on any other distro.
+It was only tested on EndeavourOS with GNOME desktop environment, but the script should function on any other distro.
 
 ## Dependencies
 
