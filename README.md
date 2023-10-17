@@ -25,8 +25,8 @@ By default, it alerts the user when the battery reaches `30%` or `80%`. We can e
 
 | Flag | Description |
 | --- | --- |
-| **-l** | Set the battery low warning level |
-| **-f** | Set the battery full warning level |
+| **-l** | Adjust the low battery warning threshold |
+| **-f** | Adjust the full battery warning threshold |
 
 For example, to get notifications when the battery reaches `25%` and `70%`:
 ```bash
@@ -53,7 +53,7 @@ batterynotify -l 25 -f 70
    systemctl enable cronie.service
    systemctl start cronie.service
    ```
-6. On GNOME to run the script on startup too, the `batterynotify.desktop` file must be copied to `~/.config/autostart`:
+6. On GNOME, to run the script on startup too, the `batterynotify.desktop` file must be copied to `~/.config/autostart`:
    ```bash
    cp batterynotify.desktop ~/.config/autostart
    ```
